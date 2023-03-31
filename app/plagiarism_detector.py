@@ -11,6 +11,7 @@ final_model_name = 'final_model.tar.gz'
 ngrams_lst = [1,4,5]
 
 def lambda_handler(event, context):
+    if
     input_doc = event['input_doc']
     input_doc_name = event['input_doc_name']
     source_docs = event['source_docs']
