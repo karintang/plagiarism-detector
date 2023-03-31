@@ -11,17 +11,17 @@ final_model_name = 'final_model.tar.gz'
 ngrams_lst = [1,4,5]
 
 def lambda_handler(event, context):
-   try:
-       input_doc = event['input_doc']
-       input_doc_name = event['input_doc_name']
-       source_docs = event['source_docs']
-       response = get_matching_output(directory, s3_bucket, s3_folderpath, sentbert_model_name, final_model_name, ngrams_lst, source_docs, input_doc, input_doc_name)
-       response_object = {}
-       response_object['statusCode'] = 200
-       response_object['body'] = json.dumps(response)
-       return { 
-               response_object
-               }
+    try:
+        input_doc = event.get('input_doc', {})
+        input_doc_name = event.get('input_doc_name', {})
+        source_docs = event.get('source_docs', {})
+        if not input_doc or not input_doc_name or not source_docs:
+            raise ValueError('Missing input parameters')
+        response = get_matching_output(directory, s3_bucket, s3_folderpath, sentbert_model_name, final_model_name, ngrams_lst, source_docs, input_doc, input_doc_name)
+        response_object = {}
+        response_object['statusCode'] = 200
+        response_object['body'] = json.dumps(response)
+        return response_object
     except ClientError as e:
         if e.response['Error']['Code'] == 'BadRequestException':
             # Handle the 400 Bad Request error here
@@ -41,3 +41,4 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': json.dumps('Internal Server Error: ' + str(e))
         }
+
